@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Büyük Sürpriz 🎉</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: radial-gradient(circle at center,#111,#000);
+    color:white;
+    text-align:center;
+    overflow:hidden;
+}
+
+.container{
+    background: rgba(255,255,255,0.08);
+    padding:40px;
+    border-radius:20px;
+    backdrop-filter: blur(10px);
+    width:90%;
+    max-width:500px;
+    z-index:2;
+}
+
+input{
+    padding:10px;
+    width:80%;
+    border:none;
+    border-radius:10px;
+    margin-top:15px;
+    font-size:16px;
+    text-align:center;
+}
+
+button{
+    margin-top:15px;
+    padding:10px 20px;
+    border:none;
+    border-radius:20px;
+    font-size:16px;
+    cursor:pointer;
+    background:white;
+    color:black;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.1);
+}
+
+#surprise{
+    display:none;
+}
+
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="container" id="quiz">
+    <h1>🧩 Sürprizi Aç!</h1>
+    <p id="question"></p>
+
+    <input type="text" id="answer" placeholder="Cevabı yaz...">
+    <br>
+    <button onclick="checkAnswer()">Kontrol Et 🔍</button>
+</div>
+
+<div class="container" id="surprise">
+    <h1>🎉 TEBRİKLER 🎉</h1>
+    <p>Hepsini doğru bildin 🖤🤍<br>
+    Bu sürpriz senin için 🎆</p>
+</div>
+
+<audio id="music" src="mars.mp3"></audio>
+
+<script>
+let currentQuestion = 0;
+
+const questions = [
+    {
+        question: "Quaresma Beşiktaş'ta hangi numarayı giydi? ⚽",
+        answer: "7"
+    },
+    {
+        question: "Beşiktaş'ın efsane teknik direktörü kimdir? 🖤🤍",
+        answer: "şenol güneş"
+    },
+    {
+        question: "7 harfliyim 💖\nBugün doğum günüm 🎂\nBen kimim?",
+        answer: "belinay"
+    },
+    {
+        question: "Portekizli futbolcuyum ⚽\nBeşiktaş'ta oynadım 🖤🤍\nBen kimim?",
+        answer: "quaresma"
+    },
+    {
+        question: "Siyah beyaz renklere sahip olan takım hangisi? 🖤🤍",
+        answer: "beşiktaş"
+    }
+];
+
+function loadQuestion(){
+    document.getElementById("question").innerText = questions[currentQuestion].question;
+}
+
+function checkAnswer(){
+    let value = document.getElementById("answer").value
+        .toLowerCase()
+        .trim();
+
+    if(value === questions[currentQuestion].answer){
+        currentQuestion++;
+
+        if(currentQuestion < questions.length){
+            document.getElementById("answer").value = "";
+            loadQuestion();
+        } else {
+            document.getElementById("quiz").style.display = "none";
+            document.getElementById("surprise").style.display = "block";
+            startFireworks();
+            document.getElementById("music").play();
+        }
+    } else {
+        alert("Yanlış cevap 😅 Tekrar dene");
+    }
+}
+
+loadQuestion();
+
+/* 🎆 Havai Fişek */
+
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+function createFirework(){
+    let x = Math.random() * canvas.width;
+    let y = Math.random() * canvas.height / 2;
+
+    for(let i=0;i<80;i++){
+        particles.push({
+            x:x,
+            y:y,
+            speed:Math.random()*5,
+            angle:Math.random()*2*Math.PI,
+            radius:2,
+            life:100
+        });
+    }
+}
+
+function animate(){
+    ctx.fillStyle="rgba(0,0,0,0.2)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach((p,i)=>{
+        p.x += Math.cos(p.angle)*p.speed;
+        p.y += Math.sin(p.angle)*p.speed;
+        p.life--;
+
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+        ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
+        ctx.fill();
+
+        if(p.life<=0){
+            particles.splice(i,1);
+        }
+    });
+
+    requestAnimationFrame(animate);
+}
+
+function startFireworks(){
+    setInterval(createFirework,700);
+}
+
+animate();
+</script>
+
+</body>
+</html>
